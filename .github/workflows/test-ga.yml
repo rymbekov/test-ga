@@ -25,7 +25,7 @@ jobs:
 
   job3:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/') && endsWith(github.ref, '.x')
+    if: startsWith(github.ref, 'refs/tags/') && semver.major || semver.minor
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
