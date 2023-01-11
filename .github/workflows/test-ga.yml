@@ -15,7 +15,9 @@ jobs:
        GITHUB_PREVIOUS_LATEST_RELEASE_WITHOUT_PATCH: ${{ steps.get-versions.outputs.GITHUB_PREVIOUS_LATEST_RELEASE_WITHOUT_PATCH }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+      with:
+         fetch-depth: 0
     - name: Run your first job
       run: |
         echo "This is the first job. Tag was pushed!"
@@ -34,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Run your second job
       run: |
         echo "This is the second job. Tag was pushed!"
@@ -45,7 +47,7 @@ jobs:
     if: ${{ needs.job1.outputs.GITHUB_PREVIOUS_LATEST_RELEASE_WITHOUT_PATCH < needs.job1.outputs.NEW_TAG_WITHOUT_PATCH }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Run your last job
       run: |
         echo "This is the last job. Tag was pushed and it is a minor version tag!"
