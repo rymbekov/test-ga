@@ -10,29 +10,24 @@ env:
 jobs:
   job1:
     runs-on: ubuntu-latest
-    # outputs:
-    #    MAJOR_VERSION: ${{ steps.versions.outputs.MAJOR_VERSION }}
-    #    MINOR_VERSION: ${{ steps.versions.outputs.MINOR_VERSION }}
-    #    PREVIOUS_MAJOR_VERSION: ${{ steps.versions.outputs.PREVIOUS_MAJOR_VERSION }}
-    #    PREVIOUS_MINOR_VERSION: ${{ steps.versions.outputs.PREVIOUS_MINOR_VERSION }}
+    outputs:
+       NEW_TAG_WITHOUT_PATCH: ${{ steps.get-versions.outputs.NEW_TAG_WITHOUT_PATCH }}
+       GITHUB_LATEST_RELEASE_WITHOUT_PATCH: ${{ steps.get-versions.outputs.GITHUB_LATEST_RELEASE_WITHOUT_PATCH }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Run your first job
       run: |
         echo "This is the first job. Tag was pushed!"
-    # - name: get versions
-    #   id: versions
-    #   run: |
-    #       MAJOR_VERSION=$(echo $GIT_TAG | cut -d'.' -f1)
-    #       MINOR_VERSION=$(echo $GIT_TAG | cut -d'.' -f2)
-    #       PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${GITHUB_SHA}^)
-    #       PREVIOUS_MAJOR_VERSION=$(echo $PREVIOUS_TAG | cut -d'.' -f1)
-    #       PREVIOUS_MINOR_VERSION=$(echo $PREVIOUS_TAG | cut -d'.' -f2)
-    #       echo "MAJOR_VERSION=$MAJOR_VERSION" >> $GITHUB_OUTPUT
-    #       echo "MINOR_VERSION=$MINOR_VERSION" >> $GITHUB_OUTPUT
-    #       echo "PREVIOUS_MAJOR_VERSION=$PREVIOUS_MAJOR_VERSION" >> $GITHUB_OUTPUT
-    #       echo "PREVIOUS_MINOR_VERSION=$PREVIOUS_MINOR_VERSION" >> $GITHUB_OUTPUT
+    - name: get versions
+      id: get-versions
+      run: |
+          NEW_TAG_WITHOUT_PATCH=$(echo $GIT_TAG | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1.\2/')
+          GITHUB_LATEST_RELEASE=$(git tag -l --sort -version:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          GITHUB_LATEST_RELEASE_WITHOUT_PATCH=`echo $GITHUB_LATEST_RELEASE | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1.\2/'`
+          echo "NEW_TAG_WITHOUT_PATCH=$NEW_TAG_WITHOUT_PATCH" >> $GITHUB_OUTPUT
+          echo "GITHUB_LATEST_RELEASE_WITHOUT_PATCH=$GITHUB_LATEST_RELEASE_WITHOUT_PATCH" >> $GITHUB_OUTPUT
+
 
   job2:
     runs-on: ubuntu-latest
@@ -44,13 +39,9 @@ jobs:
         echo "This is the second job. Tag was pushed!"
 
   job3:
+    needs: [job1]
     runs-on: ubuntu-latest
-    if: |
-      tag_old=`echo "$GITHUB_REF" | sed -E 's#refs/tags/(.*)#\1#'`
-      tag_new=`echo "$GIT_TAG" | cut -c 1-10`
-      version_old=`echo $tag_old | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1.\2/'`
-      version_new=`echo $tag_new | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1.\2/'`
-      [ "$version_old" != "$version_new" ]
+    if: ${{ needs.job1.outputs.GITHUB_LATEST_RELEASE_WITHOUT_PATCH < needs.job1.outputs.NEW_TAG_WITHOUT_PATCH }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
