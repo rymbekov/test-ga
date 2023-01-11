@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
        NEW_TAG_WITHOUT_PATCH: ${{ steps.get-versions.outputs.NEW_TAG_WITHOUT_PATCH }}
-       GITHUB_LATEST_RELEASE_WITHOUT_PATCH: ${{ steps.get-versions.outputs.GITHUB_LATEST_RELEASE_WITHOUT_PATCH }}
+       GITHUB_PREVIOUS_LATEST_RELEASE_WITHOUT_PATCH: ${{ steps.get-versions.outputs.GITHUB_PREVIOUS_LATEST_RELEASE_WITHOUT_PATCH }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -23,14 +23,13 @@ jobs:
       id: get-versions
       run: |
           NEW_TAG_WITHOUT_PATCH=$(echo $GIT_TAG | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1.\2/')
-          # GITHUB_LATEST_RELEASE=$(git tag -l --sort -version:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
-          GITHUB_LATEST_RELEASE=`echo "$GITHUB_REF" | sed -E 's#refs/tags/(.*)#\1#'`
-          GITHUB_LATEST_RELEASE_WITHOUT_PATCH=`echo $GITHUB_LATEST_RELEASE | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1.\2/'`
+          GITHUB_PREVIOUS_LATEST_RELEASE=$(git tag -l --sort -version:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sed -n '2p)
+          GITHUB_PREVIOUS_LATEST_RELEASE_WITHOUT_PATCH=`echo $GITHUB_PREVIOUS_LATEST_RELEASE | sed -E 's/([0-9]+)\.([0-9]+)\.([0-9]+)/\1.\2/'`
           echo $NEW_TAG_WITHOUT_PATCH
           echo $GITHUB_LATEST_RELEASE
-          echo $GITHUB_LATEST_RELEASE_WITHOUT_PATCH
+          echo $GITHUB_PREVIOUS_LATEST_RELEASE_WITHOUT_PATCH
           echo "NEW_TAG_WITHOUT_PATCH=$NEW_TAG_WITHOUT_PATCH" >> $GITHUB_OUTPUT
-          echo "GITHUB_LATEST_RELEASE_WITHOUT_PATCH=$GITHUB_LATEST_RELEASE_WITHOUT_PATCH" >> $GITHUB_OUTPUT
+          echo "GITHUB_PREVIOUS_LATEST_RELEASE_WITHOUT_PATCH=$GITHUB_PREVIOUS_LATEST_RELEASE_WITHOUT_PATCH" >> $GITHUB_OUTPUT
 
 
   job2:
@@ -45,7 +44,7 @@ jobs:
   job3:
     needs: [job1]
     runs-on: ubuntu-latest
-    if: ${{ needs.job1.outputs.GITHUB_LATEST_RELEASE_WITHOUT_PATCH < needs.job1.outputs.NEW_TAG_WITHOUT_PATCH }}
+    if: ${{ needs.job1.outputs.GITHUB_PREVIOUS_LATEST_RELEASE_WITHOUT_PATCH < needs.job1.outputs.NEW_TAG_WITHOUT_PATCH }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
