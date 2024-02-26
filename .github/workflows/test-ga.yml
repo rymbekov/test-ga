@@ -39,5 +39,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.generate-tag.outputs.git_tag }}
-          commit: ${{ github.sha }}
           name: ${{ steps.generate-tag.outputs.git_tag }}
+          body: asd
