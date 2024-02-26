@@ -44,6 +44,7 @@ jobs:
             NEW_GIT_TAG: ${{ steps.generate-tag.outputs.git_tag }}
             GITHUB_LATEST_TAG: ${{ steps.generate-tag.outputs.lates_git_tag }}
 
+
       - name: Create git release
         uses: ncipollo/release-action@v1
         with:
