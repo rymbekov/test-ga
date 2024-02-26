@@ -50,4 +50,4 @@ jobs:
           commit: ${{ github.sha }}
           name: ${{ steps.generate-tag.outputs.git_tag }}     
           generateReleaseNotes: true
-          body: ${{ env.COMMITS }}
+          bodyFile: commit_messages.txt
