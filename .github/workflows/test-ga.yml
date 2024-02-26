@@ -38,6 +38,7 @@ jobs:
         run: | 
             COMMITS=$(git log --format=%s ${{ env.GITHUB_LATEST_TAG }}..${{ env.NEW_GIT_TAG }})
             # echo "COMMITS=$COMMITS" >> $GITHUB_ENV
+            
             {
                 echo 'COMMITS<<EOF'
                 $COMMITS
