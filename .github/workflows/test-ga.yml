@@ -48,4 +48,4 @@ jobs:
           tag: ${{ steps.generate-tag.outputs.git_tag }}
           commit: ${{ github.sha }}
           name: ${{ steps.generate-tag.outputs.git_tag }}     
-          bodyFile: ${{ env.COMMITS }}
+          generateReleaseNotes: true
