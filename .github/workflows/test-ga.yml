@@ -34,6 +34,7 @@ jobs:
         env:
             GIT_TAG: ${{ steps.generate-tag.outputs.git_tag }}
 
+
       - name: Get commits
         id: commits
         run: | 
