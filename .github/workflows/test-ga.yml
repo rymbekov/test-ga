@@ -27,6 +27,7 @@ jobs:
             echo "lates_git_tag=$GITHUB_LATEST_RELEASE" >> $GITHUB_OUTPUT
 
 
+
       - name: Create git tag
         run: |
             git tag "${{ env.GIT_TAG }}" "${{ github.sha }}"
