@@ -35,21 +35,10 @@ jobs:
         env:
             GIT_TAG: ${{ steps.generate-tag.outputs.git_tag }}
 
-      - name: Get commits
-        id: commits
-        run: | 
-            commits=$(git log --format=%s ${{ env.GITHUB_LATEST_TAG }}..${{ env.NEW_GIT_TAG }})
-            echo "commits=$commits" >> $GITHUB_OUTPUT
-        env:
-            NEW_GIT_TAG: ${{ steps.generate-tag.outputs.git_tag }}
-            GITHUB_LATEST_TAG: ${{ steps.generate-tag.outputs.lates_git_tag }}
 
       - name: Create git release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.generate-tag.outputs.git_tag }}
           commit: ${{ github.sha }}
-          name: ${{ steps.generate-tag.outputs.git_tag }}     
-          body: ${{ env.COMMITS }}
-        env:
-            COMMITS: ${{ steps.commits.outputs.commits}}
+          name: ${{ steps.generate-tag.outputs.git_tag }}
