@@ -5,15 +5,13 @@ on:
    branches:
      - main
 
-# env:
-#   GIT_TAG: ${{ github.ref_name }}
 
 jobs:
   job1:
     runs-on: ubuntu-latest
     outputs:
         GIT_TAG: ${{ steps.generate-tag.outputs.git_tag }}
-        GITHUB_LATEST_TAG: ${{ steps.generate-tag.outputs.lates_git_tag }}
+        # GITHUB_LATEST_TAG: ${{ steps.generate-tag.outputs.lates_git_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,7 +25,7 @@ jobs:
             INCREMENTED_GITHUB_LATEST_RELEASE=$(echo ${GITHUB_LATEST_RELEASE} | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
             GIT_TAG=$(echo $INCREMENTED_GITHUB_LATEST_RELEASE)
             echo "git_tag=$GIT_TAG" >> $GITHUB_OUTPUT
-            echo "lates_git_tag=$GITHUB_LATEST_RELEASE" >> $GITHUB_OUTPUT
+            # echo "lates_git_tag=$GITHUB_LATEST_RELEASE" >> $GITHUB_OUTPUT
 
       - name: Create git tag
         run: |
