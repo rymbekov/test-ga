@@ -1,11 +1,9 @@
 name: Tag push
+
 on:
   push:
-    #  tags:
-    #    - "[0-9]+.[0-9]+.[0-9]+"
-
-# env:
-#   GIT_TAG: ${{ github.ref_name }}
+    branches:
+      - main
 
 jobs:
   job1:
